@@ -641,24 +641,24 @@ int main()
 	//cout << duration.count() << endl;
 
 	auto start = high_resolution_clock::now();
-	//vector <BigInt> primes;
-	//for (int i = 0;i < 8;i++) {
-	//	thread thr(primeGenerator, 256, std::ref(primes));
-	//	thr.detach();
-	//	Sleep(10);
-	//}
-	//while (true) {
-	//	if (primes.size() == 2) {
-	//		break;
-	//	}
-	//}
-	//cout << "prime 1:" << primes[0];
-	//cout << "prime 2:" << primes[1];
-	BigInt A("3"), M("11");
+	vector <BigInt> primes;
+	for (int i = 0;i < 8;i++) {
+		thread thr(primeGenerator, 256, std::ref(primes));
+		thr.detach();
+		Sleep(10);
+	}
+	while (true) {
+		if (primes.size() == 2) {
+			break;
+		}
+	}
+	cout << "prime 1:" << primes[0];
+	cout << "prime 2:" << primes[1];
+	//BigInt A("3"), M("11");
 
 	// Function call
-	cout << "Modular multiplicative inverse is "
-		<< modInverse(A, M);
+	//cout << "Modular multiplicative inverse is "
+	//	<< modInverse(A, M);
 	auto stop = high_resolution_clock::now();
 
 	auto duration = duration_cast<seconds>(stop - start);
