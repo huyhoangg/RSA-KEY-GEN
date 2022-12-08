@@ -561,7 +561,7 @@ bool MillerRabin(BigInt n, int iter) {
 		//cout << "miller lan thu: " << i << endl;
 		if (check_composite(n, a, d, s))
 			return false;
-		//cout << "xong miller lan thu: " << i << endl;
+		cout << "xong miller lan thu: " << i << endl;
 	}
 	return true;
 }
@@ -606,28 +606,33 @@ void RSA_key_gen(vector <BigInt> primes) {
 
 }
 
+void bestcase_utility(vector <BigInt> &primes, BigInt p) {
+	if (MillerRabin(p, 3)) {
+		primes.push_back(p);
+	}
+}
+
 void bestcase(int size) {
 	auto start = high_resolution_clock::now();
 	vector <BigInt> primes;
 	if (size == 1024) {
 		BigInt p("9322836429283396474116709145643257806750829644456661129223428781442327908782953783782282705658610614048774135661203760326643552131164246697327273370388787");
 		BigInt q("7453972708564828132544149815299784762887116385822283954081780260394355331304971420169419276666650885189959137424401409470495176518030685390738019668009493");
-		if (MillerRabin(p, 3)) {
-			primes.push_back(p);
-		}
-		if (MillerRabin(q, 3)) {
-			primes.push_back(q);
-		}
+		thread thr1(bestcase_utility, std::ref(primes), p);
+		thr1.detach();
+		thread thr2(bestcase_utility, std::ref(primes), q);
+		thr2.detach();
 	}
 	else if (size == 2048) {
 		BigInt p("161396784824625307284081165802712967193572609991659410950893526437022322378991980127116012329764407008121289304213530542147571656739882165921157793446461371090165547425284887859201472501392001093996644375922046587446709102600393778204050269339888456454384855643954258368926744539001446732034500026582229181381");
 		BigInt q("101004648173579736151747040762319872573125109099555333106351231777898455291218937201983497826919040561666212151337563473405473240443578280258305339594003974407392563992636051997186233973242924511323329722807209143875063563995318327838359020530515153347266378239546693733287506187557234319877368340514905061689");
-		if (MillerRabin(p, 3)) {
-			primes.push_back(p);
-		}
-		if (MillerRabin(q, 3)) {
-			primes.push_back(q);
-		}
+		thread thr1(bestcase_utility, std::ref(primes), p);
+		thr1.detach();
+		thread thr2(bestcase_utility, std::ref(primes), q);
+		thr2.detach();
+	}
+	while (true) {
+		if (primes.size() == 2) break;
 	}
 	RSA_key_gen(primes);
 	auto stop = high_resolution_clock::now();
