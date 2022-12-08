@@ -4,6 +4,7 @@
 #include <thread>
 #include <random>
 #include <windows.h>
+
 #include <chrono>
 using namespace std::chrono;
 using namespace std;
@@ -11,6 +12,7 @@ using namespace std;
 class BigInt {
 	string digits;
 public:
+	//Constructors:
 	BigInt();
 	BigInt(int bit_len);
 	BigInt(const char*);
@@ -22,8 +24,12 @@ public:
 	friend int Length(const BigInt&);
 	int operator[](const int)const;
 
+	/* * * * Operator Overloading * * * */
+
+//Direct assignment
 	BigInt& operator=(const BigInt&);
 
+	//Post/Pre - Incrementation
 	BigInt& operator++();
 	BigInt operator++(int temp);
 	BigInt& operator--();
@@ -32,11 +38,13 @@ public:
 	friend BigInt binpow(BigInt base, BigInt e, BigInt mod);
 	friend void divide_by_2(BigInt& a);
 
+	//Addition and Subtraction
 	friend BigInt& operator+=(BigInt&, const BigInt&);
 	friend BigInt operator+(const BigInt&, const BigInt&);
 	friend BigInt operator-(const BigInt&, const BigInt&);
 	friend BigInt& operator-=(BigInt&, const BigInt&);
 
+	//Comparison operators
 	friend bool operator==(const BigInt&, const BigInt&);
 	friend bool operator!=(const BigInt&, const BigInt&);
 
@@ -45,15 +53,26 @@ public:
 	friend bool operator<(const BigInt&, const BigInt&);
 	friend bool operator<=(const BigInt&, const BigInt&);
 
+	//Multiplication and Division
 	friend BigInt& operator*=(BigInt&, const BigInt&);
 	friend BigInt operator*(const BigInt&, const BigInt&);
 	friend BigInt& operator/=(BigInt&, const BigInt&);
 	friend BigInt operator/(const BigInt&, const BigInt&);
 
+	//Modulo
 	friend BigInt operator%(const BigInt&, const BigInt&);
 	friend BigInt& operator%=(BigInt&, const BigInt&);
 
+	//Power Function
+	friend BigInt& operator^=(BigInt&, const BigInt&);
+	friend BigInt operator^(BigInt&, const BigInt&);
+
+	//Square Root Function
+	friend BigInt sqrt(BigInt& a);
+
+	//Read and Write
 	friend ostream& operator<<(ostream&, const BigInt&);
+	friend istream& operator>>(istream&, BigInt&);
 
 	friend bool MillerRabin(BigInt n, int iter);
 
@@ -470,6 +489,19 @@ BigInt binpow(BigInt base, BigInt e, BigInt mod) {
 	return result;
 }
 
+
+istream& operator>>(istream& in, BigInt& a) {
+	string s;
+	in >> s;
+	int n = s.size();
+	for (int i = n - 1; i >= 0;i--) {
+		if (!isdigit(s[i]))
+			throw("INVALID NUMBER");
+		a.digits[n - i - 1] = s[i];
+	}
+	return in;
+}
+
 ostream& operator<<(ostream& out, const BigInt& a) {
 	for (int i = a.digits.size() - 1; i >= 0;i--)
 		cout << (short)a.digits[i];
@@ -524,6 +556,7 @@ BigInt modInverse(BigInt A, BigInt M) {
 			check_x = false;
 		}
 	}
+	// Make x positive
 	if (check_x)
 		x = m0 - x;
 	return x;
@@ -600,7 +633,7 @@ void RSA_key_gen(vector <BigInt> primes) {
 	BigInt e("65537");
 	BigInt d = modInverse(e, phi);
 	cout << "N :" << N;
-	//cout << "phi :" << phi;
+	cout << "phi :" << phi;
 	cout << "e :" << e;
 	cout << "d :" << d;
 
@@ -705,7 +738,6 @@ int main()
 	cout << "\t\t2. 1024 bit \n";
 	cout << "\t\t3. 2048 bit \n";
 	cout << "\n";
-	cout << "Pretended that prime is generated at first generation\n";
 	cout << "=============BEST CASE GENERATOR============\n";
 	cout << "\t\t4. 1024 bit \n";
 	cout << "\t\t5. 2048 bit \n";
@@ -716,16 +748,16 @@ int main()
 	else if (choice == 2) size = 512;
 	else if (choice == 3) size = 1024;
 	else if (choice == 4) {
-		cout << "generating " << 1024 << " bits key\n";
+		cout << "generating " << 1024 << "bits key\n";
 		bestcase(1024);
 	}
 	else if (choice == 5) {
-		cout << "generating " << 2048 << " bits key\n";
+		cout << "generating " << 2048 << "bits key\n";
 		bestcase(2048);
 	}
 		
 	if (size > 0) {
-		cout << "generating " << size*2 << " bits key\n";
+		cout << "generating " << size << "bits key\n";
 		run(size);
 		size = 0;
 		cout << "--------------------done--------------------\n";
