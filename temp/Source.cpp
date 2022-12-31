@@ -1,10 +1,14 @@
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <thread>
 #include <random>
 #include <windows.h>
 #include <chrono>
+#include <map>
+#include <unordered_set>
 using namespace std::chrono;
 using namespace std;
 
@@ -17,6 +21,13 @@ public:
 	BigInt(string);
 	BigInt(BigInt&);
 	BigInt(const BigInt&);
+
+	string getdata()const {
+		string s;
+		for (int i = digits.size() - 1; i >= 0;i--)
+			s += digits[i] + '0';
+		return s;
+	}
 
 	friend bool Null(const BigInt&);
 	friend int Length(const BigInt&);
@@ -561,7 +572,7 @@ bool MillerRabin(BigInt n, int iter) {
 		//cout << "miller lan thu: " << i << endl;
 		if (check_composite(n, a, d, s))
 			return false;
-		cout << "xong miller lan thu: " << i << endl;
+		//cout << "xong miller lan thu: " << i << endl;
 	}
 	return true;
 }
@@ -593,7 +604,9 @@ void primeGenerator(int size, vector<BigInt>& pl) {
 	}
 }
 
-void RSA_key_gen(vector <BigInt> primes) {
+
+
+void RSA_key_gen(vector <BigInt> primes, vector <BigInt>& k) {
 	BigInt n1("1");
 	BigInt N = primes[0] * primes[1];
 	BigInt phi = (primes[0] - n1) * (primes[1] - n1);
@@ -603,7 +616,9 @@ void RSA_key_gen(vector <BigInt> primes) {
 	//cout << "phi :" << phi;
 	cout << "e :" << e;
 	cout << "d :" << d;
-
+	k.push_back(N);
+	k.push_back(e);
+	k.push_back(d);
 }
 
 void bestcase_utility(vector <BigInt> &primes, BigInt p) {
@@ -634,7 +649,8 @@ void bestcase(int size) {
 	while (true) {
 		if (primes.size() == 2) break;
 	}
-	RSA_key_gen(primes);
+	vector <BigInt> k;
+	RSA_key_gen(primes, k);
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<seconds>(stop - start);
 	cout << "executed in " << duration.count() << " seconds" << endl;
@@ -653,87 +669,347 @@ void run(int size) {
 			break;
 		}
 	}
-	RSA_key_gen(primes);
+	vector <BigInt> k;
+	RSA_key_gen(primes, k);
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<seconds>(stop - start);
 	cout << "executed in " << duration.count() << " seconds" << endl;
 }
 
-int main()
+
+
+//int main()
+//{
+//	//BigInt first("6655656777888865489713218764321656878978956488");
+//	//cout << "The number of digits"
+//	//	<< " in first big integer = "
+//	//	<< Length(first) << '\n';
+//	//BigInt third("5");
+//	//cout << first % third;
+//
+//	//auto start = high_resolution_clock::now();
+//	//BigInt first("63114332134597298167586122324167251171554288490477");
+//	//cout << "The number of digits"
+//	//	<< " in first big integer = "
+//	//	<< Length(first) << '\n';
+//
+//	//BigInt third("2394982229084464369186143536490431154951105459603198585284857286757763383909");
+//	//BigInt s("306557725322811439255826372670775187833741498829209418916461732704993713140353");
+//	//cout << binpow(first, third, s);
+//	//auto stop = high_resolution_clock::now();
+//
+//	//srand(time(0));
+//	//auto duration = duration_cast<microseconds>(stop - start);
+//	//cout << duration.count() << endl;
+//
+//	//auto start = high_resolution_clock::now();
+//	//vector <BigInt> primes;
+//	//for (int i = 0;i < 8;i++) {
+//	//	thread thr(primeGenerator, 512, std::ref(primes));
+//	//	thr.detach();
+//	//	Sleep(10);
+//	//}
+//	//while (true) {
+//	//	if (primes.size() == 2) {
+//	//		break;
+//	//	}
+//	//}
+//	//RSA_key_gen(primes);
+//
+//	//auto stop = high_resolution_clock::now();
+//
+//	//auto duration = duration_cast<seconds>(stop - start);
+//	//cout << "executed in " << duration.count() << " seconds" << endl;
+//
+//
+//	int choice;
+//	int size = 0;
+//	cout << "==============RSA KEY GENERATOR=============\n";
+//	cout << "\t\t1. 512 bit \n";
+//	cout << "\t\t2. 1024 bit \n";
+//	cout << "\t\t3. 2048 bit \n";
+//	cout << "\n";
+//	cout << "Pretended that prime is generated at first generation\n";
+//	cout << "=============BEST CASE GENERATOR============\n";
+//	cout << "\t\t4. 1024 bit \n";
+//	cout << "\t\t5. 2048 bit \n";
+//
+//	cout << "choice? ";
+//	cin >> choice;
+//	if (choice == 1) size = 256;
+//	else if (choice == 2) size = 512;
+//	else if (choice == 3) size = 1024;
+//	else if (choice == 4) {
+//		cout << "generating " << 1024 << " bits key\n";
+//		bestcase(1024);
+//	}
+//	else if (choice == 5) {
+//		cout << "generating " << 2048 << " bits key\n";
+//		bestcase(2048);
+//	}
+//		
+//	if (size > 0) {
+//		cout << "generating " << size*2 << " bits key\n";
+//		run(size);
+//		size = 0;
+//		cout << "--------------------done--------------------\n";
+//	}
+//	return 0;
+//}
+
+vector<string> split(const std::string& str, int n)
 {
-	//BigInt first("6655656777888865489713218764321656878978956488");
-	//cout << "The number of digits"
-	//	<< " in first big integer = "
-	//	<< Length(first) << '\n';
-	//BigInt third("5");
-	//cout << first % third;
+	vector<string> substrings;
+	for (size_t i = 0; i < str.size(); i += n) {
+		substrings.push_back(str.substr(i, n));
+	}
+	return substrings;
+}
 
-	//auto start = high_resolution_clock::now();
-	//BigInt first("63114332134597298167586122324167251171554288490477");
-	//cout << "The number of digits"
-	//	<< " in first big integer = "
-	//	<< Length(first) << '\n';
+//int main()
+//{
+//	std::string str = "b b bi abcdefg sdasdas";
+//	int n = 7;
+//	vector<string> tokens = split(str, 6);
+//	for (auto& token : tokens) {
+//		cout << token << "N" << endl;
+//	}
+//
+//	return 0;
+//}
 
-	//BigInt third("2394982229084464369186143536490431154951105459603198585284857286757763383909");
-	//BigInt s("306557725322811439255826372670775187833741498829209418916461732704993713140353");
-	//cout << binpow(first, third, s);
-	//auto stop = high_resolution_clock::now();
+void encrypt(string s, BigInt e, BigInt N, vector<BigInt>& rt) {
+	for (int i = 0;i < s.length();i++) {
+		int c = (int)s[i];
+		string s = to_string(c);
+		BigInt k(s);
+		BigInt t = binpow(k, e, N);
+		rt.push_back(t);
+	}
+}
 
-	//srand(time(0));
-	//auto duration = duration_cast<microseconds>(stop - start);
-	//cout << duration.count() << endl;
+vector<vector<BigInt>> split(const vector<BigInt>& v, int Nsplit) {
+	int n = v.size();
+	int size_max = n / Nsplit + (n % Nsplit != 0);
+	vector<vector<BigInt>> split;
+	for (int ibegin = 0; ibegin < n; ibegin += size_max) {
+		int iend = ibegin + size_max;
+		if (iend > n) iend = n;
+		split.emplace_back(vector<BigInt>(v.begin() + ibegin, v.begin() + iend));
+	}
+	return split;
+}
 
-	//auto start = high_resolution_clock::now();
-	//vector <BigInt> primes;
-	//for (int i = 0;i < 8;i++) {
-	//	thread thr(primeGenerator, 512, std::ref(primes));
-	//	thr.detach();
-	//	Sleep(10);
-	//}
-	//while (true) {
-	//	if (primes.size() == 2) {
-	//		break;
-	//	}
-	//}
-	//RSA_key_gen(primes);
+void decrypt(vector<BigInt> c, BigInt d, BigInt N, map<BigInt, BigInt> &lookup) {
+	for (int i = 0;i < c.size();i++) {
+		BigInt t = binpow(c[i], d, N);
+		lookup.insert({ c[i], t });
+	}
+}
 
-	//auto stop = high_resolution_clock::now();
+void action_encrypt(string filein, string fileout, BigInt N, BigInt e) {
+	ifstream fin(filein);
+	string s;
+	if (fin) {
+		ostringstream ss;
+		ss << fin.rdbuf();
+		s = ss.str();
+	}
 
-	//auto duration = duration_cast<seconds>(stop - start);
-	//cout << "executed in " << duration.count() << " seconds" << endl;
+	fin.close();
+	ofstream fout(fileout);
+
+	if (s.length() < 4) {
+		vector<BigInt> part1;
+		encrypt(s, e, N, part1);
+		for (auto& t : part1) {
+			fout << t.getdata() << endl;
+		}
+		return;
+	}
+
+	int parts = floor(s.length() / 4);
+	vector<string> tokens = split(s, parts);
+
+	vector<BigInt> part1;
+	vector<BigInt> part2;
+	vector<BigInt> part3;
+	vector<BigInt> part4;
+	vector<BigInt> part5;
+
+	thread thr1(encrypt, tokens[0], e, N, std::ref(part1));
+	thread thr2(encrypt, tokens[1], e, N, std::ref(part2));
+	thread thr3(encrypt, tokens[2], e, N, std::ref(part3));
+	thread thr4(encrypt, tokens[3], e, N, std::ref(part4));
+	if (tokens.size() > 4) {
+		thread thr5(encrypt, tokens[4], e, N, std::ref(part5));
+		thr5.join();
+	}
+	thr1.join();
+	thr2.join();
+	thr3.join();
+	thr4.join();
+
+	for (auto& t: part1) {
+		fout << t.getdata() << endl;
+	}
+	for (auto& t : part2) {
+		fout << t.getdata() << endl;
+	}
+	for (auto& t : part3) {
+		fout << t.getdata() << endl;
+	}
+	for (auto& t : part4) {
+		fout << t.getdata() << endl;
+	}
+	for (auto& t : part5) {
+		fout << t.getdata() << endl;
+	}
+	fout.close();
+}
+
+void action_decrypt(string filein, string fileout, BigInt N, BigInt d) {
+	//BigInt N("411161078128859465503378165456390543257898265167714661796568835759205730521831219553207794948922473161188644476001601443465094005884151544482952648137509287");
+	//BigInt d("8463254259362366586265119630142832947112390858770573550262773081452744716327393921942757326740425910531090956208944124010224352107254791121536229526872673");
 
 
-	int choice;
-	int size = 0;
-	cout << "==============RSA KEY GENERATOR=============\n";
-	cout << "\t\t1. 512 bit \n";
-	cout << "\t\t2. 1024 bit \n";
-	cout << "\t\t3. 2048 bit \n";
+	string cipher;
+	ifstream f(filein);
+	vector <BigInt> c;
+	vector <string> temp;
+
+	//tinh tung gia tri unique
+	while (f >> cipher) {
+		temp.push_back(cipher);
+	}
+
+	unordered_set<string> us(temp.begin(), temp.end());
+	for (auto& i : us) {
+		BigInt t(i);
+		c.push_back(t);
+	}
+	
+	auto p = split(c, 8);
+
+
+	map<BigInt, BigInt> lookup;
+	std::vector<std::thread> thrs;
+	for (int i = 0;i < p.size();i++) {
+		thread k(decrypt, p[i], d, N, std::ref(lookup));
+		thrs.push_back(std::move(k));
+	}
+	for (auto& t : thrs) {
+		t.join();
+	}
+	vector <BigInt> rt;
+	map<BigInt, BigInt>::iterator it;
+	for (auto& t : temp) {
+		BigInt k(t);
+		it = lookup.find(k);
+		if (it != lookup.end()) {
+			rt.push_back(it->second);
+		}
+	}
+	ofstream fout(fileout);
+	for (auto& t : rt) {
+		int num = stoi(t.getdata());
+		fout << char(num);
+	}
+}
+
+void run1(int size, string plain, string cipher, string decrypt) {
+	auto start = high_resolution_clock::now();
+	vector <BigInt> primes;
+	for (int i = 0;i < 8;i++) {
+		thread thr(primeGenerator, size, std::ref(primes));
+		thr.detach();
+		Sleep(10);
+	}
+	while (true) {
+		if (primes.size() == 2) {
+			break;
+		}
+	}
+	vector<BigInt> k;
+	RSA_key_gen(primes, k);
+
+	cout << "dang ma hoa file " << plain << endl;
+	action_encrypt(plain, cipher, k[0], k[1]);
+	cout << "ma hoa thanh cong, file ma hoa duoc luu vao " << cipher << endl;
+	cout << "dang giai ma file " << cipher << endl;
+	action_decrypt(cipher, decrypt, k[0], k[2]);
+	cout << "giai ma thanh cong, file giai ma duoc luu vao " << decrypt << endl;
+
+	cout << "done. \n";
+	cout << endl;
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<seconds>(stop - start);
+	cout << "executed in " << duration.count() << " seconds" << endl;
+}
+
+void run2(string plain, string cipher, string decrypt, vector<BigInt> k ) {
+	auto start = high_resolution_clock::now();
+	cout << "dang ma hoa file " << plain << endl;
+	action_encrypt(plain, cipher, k[0], k[1]);
+	cout << "ma hoa thanh cong, file ma hoa duoc luu vao " << cipher << endl;
+	cout << "dang giai ma file " << cipher << endl;
+	action_decrypt(cipher, decrypt, k[0], k[2]);
+	cout << "giai ma thanh cong, file giai ma duoc luu vao " << decrypt << endl;
+
+	cout << "done. \n";
+	cout << endl;
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<seconds>(stop - start);
+	cout << "executed in " << duration.count() << " seconds" << endl;
+}
+
+int main() {
+	string plain;
+	string cipher;
+	string decrypt;
+	cout << "nhap duong dan tap tin plaintext :";
+	cin >> plain;
+
+	cout << "nhap duong dan tap tin cipher sau khi duoc encrypt :";
+	cin >> cipher;
+
+	cout << "nhap duong dan tap tin giai ma sau khi duoc decrypt :";
+	cin >> decrypt;
 	cout << "\n";
-	cout << "Pretended that prime is generated at first generation\n";
-	cout << "=============BEST CASE GENERATOR============\n";
-	cout << "\t\t4. 1024 bit \n";
-	cout << "\t\t5. 2048 bit \n";
+	int choice;
+	int size;
 
-	cout << "choice? ";
+	cout << "==============RSA=============\n";
+	cout << "\t1. sinh khoa\n";
+	cout << "\t2. nhap khoa\n";
+	cout << "lua chon cua ban ? ";
 	cin >> choice;
-	if (choice == 1) size = 256;
-	else if (choice == 2) size = 512;
-	else if (choice == 3) size = 1024;
-	else if (choice == 4) {
-		cout << "generating " << 1024 << " bits key\n";
-		bestcase(1024);
+	if (choice == 1) {
+		cout << "nhap size key : ";
+		cin >> size;
+		cout << "he thong dang tao khoa .... \n";
+		run1(size, plain, cipher, decrypt);
 	}
-	else if (choice == 5) {
-		cout << "generating " << 2048 << " bits key\n";
-		bestcase(2048);
+	else if (choice == 2) {
+		string N, e, d;
+		cout << "nhap khoa N : ";
+		cin >> N;
+		cout << "nhap khoa e : ";
+		cin >> e;
+		cout << "nhap khoa d : ";
+		cin >> d;
+		BigInt NN(N);
+		BigInt ee(e);
+		BigInt dd(d);
+		vector <BigInt> k;
+		k.push_back(NN);
+		k.push_back(ee);
+		k.push_back(dd);
+		run2(plain, cipher, decrypt, k);
 	}
-		
-	if (size > 0) {
-		cout << "generating " << size*2 << " bits key\n";
-		run(size);
-		size = 0;
-		cout << "--------------------done--------------------\n";
-	}
+
+	//action_encrypt(plain, cipher);
+	//action_decrypt(cipher, decrypt);
 	return 0;
 }
+
